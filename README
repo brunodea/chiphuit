@@ -7,4 +7,5 @@ I chose Chip-8 as my next project because I wanted something simpler for exercis
 
 - Get more familiar with C++ in general and specially C++14;
 - Learn how to use CMake;
+- Learn how to debug using gdb;
 - Improve my VIM skills.
