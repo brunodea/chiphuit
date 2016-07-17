@@ -14,6 +14,8 @@ namespace chu
     {
     public:
         ChipHuit(const std::vector<byte> &rom);
+
+        void start();
     private:
         cpu::Instruction m_Instrs[NUMBER_OF_INSTRS]; // for instruction translation
         std::unique_ptr<cpu::Cpu> m_Cpu;

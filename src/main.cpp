@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
                 (std::istreambuf_iterator<char>()));
         chu::ChipHuit chip_huit(rom);
 
+        chip_huit.start();
     }
     else
         std::cerr << "Usage: ./chiphuit path/to/rom\n";

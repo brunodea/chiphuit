@@ -15,8 +15,19 @@ ChipHuit::ChipHuit(const std::vector<byte> &rom)
     for (word i = 0; i < NUMBER_OF_INSTRS; ++i)
     {
         m_Instrs[i] = cpu::Instruction(i, m_Cpu.get(), m_Memory.get());
-        auto s = m_Instrs[i].to_string();
-        if (!s.empty())
-            std::cout << s << '\n';
+    }
+}
+
+void ChipHuit::start()
+{
+    word start_addr = MEMORY_ROM_START_ADDR;
+    for (auto i = start_addr; i < MEMORY_SIZE_IN_BYTES; ++i)
+    {
+        auto msb = m_Memory->read(i++);
+        auto lsb = m_Memory->read(i);
+
+        auto opcode = (static_cast<word>(msb) << 8) | lsb;
+        if (opcode != 0)
+            std::cout << m_Instrs[opcode].to_string() << '\n';
     }
 }
