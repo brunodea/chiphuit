@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "util/macros.h"
 
 namespace chu
@@ -16,6 +17,7 @@ namespace cpu
 
         inline
         const InstrType &type() const noexcept;
+        std::string to_string() const noexcept;
 
     private:
         InstrType m_Type;

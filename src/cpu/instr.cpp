@@ -207,3 +207,105 @@ const InstrType &Instruction::type() const noexcept
 {
     return m_Type;
 }
+
+std::string Instruction::to_string() const noexcept
+{
+    std::string result("");
+    switch (m_Type)
+    {
+        case InstrType::Sys:
+            break;
+        case InstrType::ScdN:
+            break;
+        case InstrType::Cls:
+            break;
+        case InstrType::Ret:
+            break;
+        case InstrType::Scr:
+            break;
+        case InstrType::Scl:
+            break;
+        case InstrType::Exit:
+            break;
+        case InstrType::Low:
+            break;
+        case InstrType::High:
+            break;
+        case InstrType::JpAddr:
+            break;
+        case InstrType::Call:
+            break;
+        case InstrType::SeVB:
+            break;
+        case InstrType::SneVB:
+            break;
+        case InstrType::SeVV:
+            break;
+        case InstrType::LdVB:
+            break;
+        case InstrType::AddVB:
+            break;
+        case InstrType::LdVV:
+            break;
+        case InstrType::OrVV:
+            break;
+        case InstrType::AndVV:
+            break;
+        case InstrType::XorVV:
+            break;
+        case InstrType::AddVV:
+            break;
+        case InstrType::SubVV:
+            break;
+        case InstrType::ShrV:
+            break;
+        case InstrType::SubnVV:
+            break;
+        case InstrType::ShlV:
+            break;
+        case InstrType::SneVV:
+            break;
+        case InstrType::LdIAddr:
+            break;
+        case InstrType::JpVAddr:
+            break;
+        case InstrType::RndVB:
+            break;
+        case InstrType::DrwVV0:
+            break;
+        case InstrType::DrwVVN:
+            break;
+        case InstrType::SkpV:
+            break;
+        case InstrType::SknpV:
+            break;
+        case InstrType::LdVDt:
+            break;
+        case InstrType::LdVK:
+            break;
+        case InstrType::LdDtV:
+            break;
+        case InstrType::LdStV:
+            break;
+        case InstrType::AddIV:
+            break;
+        case InstrType::LdFV:
+            break;
+        case InstrType::LdHfV:
+            break;
+        case InstrType::LdBV:
+            break;
+        case InstrType::LdIV:
+            break;
+        case InstrType::LdVI:
+            break;
+        case InstrType::LdRV:
+            break;
+        case InstrType::LdVR:
+            break;
+        default:
+            break;
+    }
+
+    return result;
+}
