@@ -1,7 +1,10 @@
 #pragma once
 
+#include <memory>
+
 #include "util/macros.h"
 #include "instr.h"
+#include "mem.h"
 
 namespace chu
 {
@@ -13,7 +16,7 @@ namespace cpu
     {
     friend class Instruction;
     public:
-        Cpu();
+        Cpu(mem::Memory *memory);
 
         void run();
 
@@ -27,6 +30,9 @@ namespace cpu
 
         DReg m_PC; // program counter
         DReg m_SP; // stack pointer
+
+        mem::Memory *m_Memory;
+        std::unique_ptr<Instruction> m_OpcodeInstrMap[NUMBER_OF_INSTRS];
     }; // end of class Cpu
 
 } // end of namespace cpu
