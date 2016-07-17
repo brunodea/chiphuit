@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "cpu.h"
 #include "mem.h"
@@ -12,7 +13,7 @@ namespace chu
     class ChipHuit
     {
     public:
-        ChipHuit();
+        ChipHuit(const std::vector<byte> &rom);
     private:
         cpu::Instruction m_Instrs[NUMBER_OF_INSTRS]; // for instruction translation
         std::unique_ptr<cpu::Cpu> m_Cpu;

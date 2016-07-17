@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "util/macros.h"
 
 namespace chu
@@ -10,6 +11,8 @@ namespace mem
     {
     public:
         Memory();
+
+        void load_rom(const std::vector<byte> &rom);
 
         byte read(const word &address) const;
         void write(const word &address, const byte &value);
