@@ -33,4 +33,29 @@ void Cpu::run()
     }
 }
 
+byte Cpu::pop_stack_byte()
+{
+    return m_Memory->read(m_SP--);
+}
+
+word Cpu::pop_stack_word()
+{
+    auto lsb = pop_stack_byte();
+    auto msb = pop_stack_byte();
+
+    return (static_cast<word>(msb) << 8) | lsb;
+}
+
+void Cpu::push_stack_byte(const byte &b)
+{
+    m_SP++;
+    m_Memory->write(m_SP, b);
+}
+
+void Cpu::push_stack_word(const word &w)
+{
+    auto lsb = w & 0x00FF;
+    auto msb = w & 0xFF00;
+    push_stack_byte(msb);
+    push_stack_byte(lsb);
 }
