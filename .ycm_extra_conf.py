@@ -65,6 +65,7 @@ flags = [
     '-I', '/home/bruno/fun/projects/chiphuit/src',
     '-I', '/home/bruno/fun/projects/chiphuit/src/cpu',
     '-I', '/home/bruno/fun/projects/chiphuit/src/util',
+    '-I', '.',
 ]
 
 

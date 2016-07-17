@@ -1,4 +1,4 @@
-add_library(cpu cpu.cpp)
+add_library(cpu cpu.cpp instr.cpp)
 
 install (TARGETS cpu DESTINATION bin)
-install (FILES cpu.h DESTINATION include)
+install (FILES cpu.h instr.h DESTINATION include)
