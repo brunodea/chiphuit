@@ -6,9 +6,12 @@
 namespace chu
 {
 namespace cpu
-{ 
+{
+    class Instruction;
+
     class Cpu
     {
+    friend class Instruction;
     public:
         Cpu();
 
