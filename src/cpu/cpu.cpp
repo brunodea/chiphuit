@@ -52,7 +52,7 @@ void Cpu::push_stack_byte(const byte &b)
 void Cpu::push_stack_word(const word &w)
 {
     auto lsb = w & 0x00FF;
-    auto msb = w & 0xFF00;
+    auto msb = (w & 0xFF00) >> 8;
     push_stack_byte(msb);
     push_stack_byte(lsb);
 }
