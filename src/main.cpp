@@ -2,15 +2,17 @@
 
 #include "cpu.h"
 
-using namespace std;
 
-int main(int argc, char *argv[])
+int main()
 {
+    using std::cout;
+    using std::endl;
+
     cout << "****************************" << endl;
     cout << "* Chip Huit by Bruno de A. *" << endl;
     cout << "****************************" << endl;
 
-    chu::Cpu cpu;
+    chu::cpu::Cpu cpu;
     cpu.run();
     return 0;
 }
