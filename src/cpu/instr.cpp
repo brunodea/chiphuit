@@ -587,7 +587,10 @@ void Instruction::execute() const
         {
             int i;
             for (i = 0; i < lreg; ++i)
-                m_Memory->write(m_Cpu->m_MemReg + i, m_Cpu->m_GenRegs[i]);
+            {
+                auto val = i == 16 ? m_Cpu->m_FlagReg : m_Cpu->m_GenRegs[i];
+                m_Memory->write(m_Cpu->m_MemReg + i, val);
+            }
             m_Cpu->m_MemReg += i; // TODO: make sure this should be done
         }
         break;
@@ -595,7 +598,13 @@ void Instruction::execute() const
         {
             int i;
             for (i = 0; i < lreg; ++i)
-                m_Cpu->m_GenRegs[i] = m_Memory->read(m_Cpu->m_MemReg + i);
+            {
+                auto val = m_Memory->read(m_Cpu->m_MemReg + i);
+                if (i == 16)
+                    m_Cpu->m_FlagReg = val;
+                else
+                    m_Cpu->m_GenRegs[i] = val;
+            }
             m_Cpu->m_MemReg += i; // TODO: make sure this should be done
         }
         break;
