@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <cstring> // memset
 #include <assert.h>
+#include <algorithm>
 
 using namespace chu::mem;
 
@@ -21,8 +22,8 @@ byte Memory::read(const word &address) const
 
 word Memory::read_word(const word &address) const
 {
-    auto lsb = read(address);
-    auto msb = read(address+1);
+    auto msb = read(address);
+    auto lsb = read(address+1);
     return (static_cast<word>(msb) << 8) | lsb;
 }
 
@@ -35,12 +36,7 @@ void Memory::write(const word &address, const byte &value)
 void Memory::load_rom(const std::vector<byte> &rom)
 {
     assert(rom.size() < MEMORY_SIZE_IN_BYTES - MEMORY_ROM_START_ADDR);
-    // store MSBs first
-    for (auto addr = MEMORY_ROM_START_ADDR, i = 0; i + 1 < static_cast<int>(rom.size()); ++addr, ++i)
-    {
-        m_Memory[addr++] = rom[i+1];
-        m_Memory[addr] = rom[i++];
-    }
+    std::copy_n(rom.begin(), rom.size(), &m_Memory[MEMORY_ROM_START_ADDR]);
 }
 
 std::vector<byte> Memory::chunk(const word &start_address, const word &end_address)
