@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream> // std::hex
 #include <random>
+#include <iomanip> // std::setfill // std::setw
 
 #include "mem.h"
 
