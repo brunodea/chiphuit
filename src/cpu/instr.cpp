@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <iostream> // std::hex
+#include <random>
 
 #include "mem.h"
 
@@ -437,99 +438,173 @@ std::string Instruction::to_string() const noexcept
 
 void Instruction::execute() const
 {
+    auto addr = m_Opcode & 0x0FFF;
+    auto lreg = (m_Opcode >> 16) & 0x000F;
+    auto rreg = (m_Opcode >> 8) & 0x000F;
+    auto imme = m_Opcode & 0x00FF;
+
+    auto *x = &m_Cpu->m_GenRegs[lreg];
+    auto *y = &m_Cpu->m_GenRegs[rreg];
+    auto should_increment_pc = true;
     switch (m_Type)
     {
-        case InstrType::Sys:
-            break;
-        case InstrType::ScdN:
-            break;
-        case InstrType::Cls:
-            break;
-        case InstrType::Ret:
-            break;
-        case InstrType::Scr:
-            break;
-        case InstrType::Scl:
-            break;
-        case InstrType::Exit:
-            break;
-        case InstrType::Low:
-            break;
-        case InstrType::High:
-            break;
-        case InstrType::JpAddr:
-            break;
-        case InstrType::Call:
-            break;
-        case InstrType::SeVB:
-            break;
-        case InstrType::SneVB:
-            break;
-        case InstrType::SeVV:
-            break;
-        case InstrType::LdVB:
-            break;
-        case InstrType::AddVB:
-            break;
-        case InstrType::LdVV:
-            break;
-        case InstrType::OrVV:
-            break;
-        case InstrType::AndVV:
-            break;
-        case InstrType::XorVV:
-            break;
-        case InstrType::AddVV:
-            break;
-        case InstrType::SubVV:
-            break;
-        case InstrType::ShrV:
-            break;
-        case InstrType::SubnVV:
-            break;
-        case InstrType::ShlV:
-            break;
-        case InstrType::SneVV:
-            break;
-        case InstrType::LdIAddr:
-            break;
-        case InstrType::JpVAddr:
-            break;
-        case InstrType::RndVB:
-            break;
-        case InstrType::DrwVV0:
-            break;
-        case InstrType::DrwVVN:
-            break;
-        case InstrType::SkpV:
-            break;
-        case InstrType::SknpV:
-            break;
-        case InstrType::LdVDt:
-            break;
-        case InstrType::LdVK:
-            break;
-        case InstrType::LdDtV:
-            break;
-        case InstrType::LdStV:
-            break;
-        case InstrType::AddIV:
-            break;
-        case InstrType::LdFV:
-            break;
-        case InstrType::LdHfV:
-            break;
-        case InstrType::LdBV:
-            break;
-        case InstrType::LdIV:
-            break;
-        case InstrType::LdVI:
-            break;
-        case InstrType::LdRV:
-            break;
-        case InstrType::LdVR:
-            break;
-        default:
-            break;
+    case InstrType::Sys:
+        // do nothing instead?
+        m_Cpu->m_PC = addr;
+        break;
+    case InstrType::ScdN:
+        break;
+    case InstrType::Cls:
+        break;
+    case InstrType::Ret:
+        m_Cpu->m_PC = m_Cpu->pop_stack_word();
+        should_increment_pc = false;
+        break;
+    case InstrType::Scr:
+        break;
+    case InstrType::Scl:
+        break;
+    case InstrType::Exit:
+        break;
+    case InstrType::Low:
+        break;
+    case InstrType::High:
+        break;
+    case InstrType::JpAddr:
+        m_Cpu->m_PC = addr;
+        should_increment_pc = false;
+        break;
+    case InstrType::Call:
+        m_Cpu->push_stack_word(m_Cpu->m_PC);
+        m_Cpu->m_PC = addr;
+        should_increment_pc = false;
+        break;
+    case InstrType::SeVB:
+        if (*x == imme) m_Cpu->m_PC++;
+        break;
+    case InstrType::SneVB:
+        if (*x != imme) m_Cpu->m_PC++;
+        break;
+    case InstrType::SeVV:
+        if (*x == *y) m_Cpu->m_PC++;
+        break;
+    case InstrType::LdVB:
+        *x = imme;
+        break;
+    case InstrType::AddVB:
+        *x += imme;
+        break;
+    case InstrType::LdVV:
+        *x = *y;
+        break;
+    case InstrType::OrVV:
+        *x |= *y;
+        break;
+    case InstrType::AndVV:
+        *x &= *y;
+        break;
+    case InstrType::XorVV:
+        *x ^= *y;
+        break;
+    case InstrType::AddVV:
+        {
+            auto sum = static_cast<word>(*x) + static_cast<word>(*y);
+            m_Cpu->m_FlagReg = sum > 0xFF ? 1 : 0;
+            *x = static_cast<byte>(sum);
+        }
+        break;
+    case InstrType::SubVV:
+        m_Cpu->m_FlagReg = *x > *y ? 1 : 0;
+        *x -= *y;
+        break;
+    case InstrType::ShrV:
+        m_Cpu->m_FlagReg = (*x & 0b1) == 1 ? 1 : 0;
+        *x >>= 1;
+        break;
+    case InstrType::SubnVV:
+        m_Cpu->m_FlagReg = *y > *x ? 1 : 0;
+        *x = *y - *x;
+        break;
+    case InstrType::ShlV:
+        m_Cpu->m_FlagReg = (*x & 0b10000000) == 1 ? 1 : 0;
+        *x <<= 1;
+        break;
+    case InstrType::SneVV:
+        if (*x != *y) m_Cpu->m_PC++;
+        break;
+    case InstrType::LdIAddr:
+        m_Cpu->m_MemReg = addr;
+        break;
+    case InstrType::JpVAddr:
+        m_Cpu->m_PC = addr + m_Cpu->m_GenRegs[0];
+        should_increment_pc = false;
+        break;
+    case InstrType::RndVB:
+        {
+            std::default_random_engine gen;
+            std::uniform_int_distribution<byte> dist(0x00, 0xFF);
+            *x = dist(gen) & imme;
+        }
+        break;
+    case InstrType::DrwVV0:
+        break;
+    case InstrType::DrwVVN:
+        break;
+    case InstrType::SkpV:
+        break;
+    case InstrType::SknpV:
+        break;
+    case InstrType::LdVDt:
+        *x = m_Cpu->m_DelayReg;
+        break;
+    case InstrType::LdVK:
+        break;
+    case InstrType::LdDtV:
+        m_Cpu->m_DelayReg = *x;
+        break;
+    case InstrType::LdStV:
+        m_Cpu->m_SoundReg = *x;
+        break;
+    case InstrType::AddIV:
+        m_Cpu->m_MemReg += *x;
+        break;
+    case InstrType::LdFV:
+        break;
+    case InstrType::LdHfV:
+        break;
+    case InstrType::LdBV:
+        {
+            auto c = *x / 100;
+            auto d = ((*x / 10) % 10);
+            auto u = *x - (c * 100) + (d * 10);
+            m_Memory->write(m_Cpu->m_MemReg, c);
+            m_Memory->write(m_Cpu->m_MemReg + 1, d);
+            m_Memory->write(m_Cpu->m_MemReg + 2, u);
+        }
+        break;
+    case InstrType::LdIV:
+        {
+            int i;
+            for (i = 0; i < lreg; ++i)
+                m_Memory->write(m_Cpu->m_MemReg + i, m_Cpu->m_GenRegs[i]);
+            m_Cpu->m_MemReg += i; // TODO: make sure this should be done
+        }
+        break;
+    case InstrType::LdVI:
+        {
+            int i;
+            for (i = 0; i < lreg; ++i)
+                m_Cpu->m_GenRegs[i] = m_Memory->read(m_Cpu->m_MemReg + i);
+            m_Cpu->m_MemReg += i; // TODO: make sure this should be done
+        }
+        break;
+    case InstrType::LdRV:
+        break;
+    case InstrType::LdVR:
+        break;
+    default:
+        break;
     }
+    if (should_increment_pc)
+        m_Cpu->m_PC++;
 }

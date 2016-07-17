@@ -24,7 +24,6 @@ int main(int argc, char *argv[])
                 (std::istreambuf_iterator<char>(rom_stream)),
                 (std::istreambuf_iterator<char>()));
         chu::ChipHuit chip_huit(rom);
-
         chip_huit.start();
     }
     else
