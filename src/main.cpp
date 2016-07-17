@@ -1,18 +1,18 @@
 #include <iostream>
 
-#include "cpu.h"
-
+//#define NDEBUG // disable asserts
+#include "chiphuit.h"
 
 int main()
 {
     using std::cout;
     using std::endl;
 
-    cout << "****************************" << endl;
-    cout << "* Chip Huit by Bruno de A. *" << endl;
-    cout << "****************************" << endl;
+    cout << "****************************\n";
+    cout << "* Chip Huit by Bruno de A. *\n";
+    cout << "****************************\n";
 
-    chu::cpu::Cpu cpu;
-    cpu.run();
+    chu::ChipHuit chip_huit {};
+
     return 0;
 }
