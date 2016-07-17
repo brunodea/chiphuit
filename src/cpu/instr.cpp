@@ -1,12 +1,15 @@
 #include "instr.h"
 
+#include <string>
+
 using namespace chu::cpu;
 
 Instruction::Instruction()
-    : m_Type(InstrType::NOP)
+    : m_Type(InstrType::NOP), m_Opcode(0)
 {}
 
 Instruction::Instruction(const word &opcode)
+    : m_Opcode(opcode)
 {
     for (int i = 0; i < NUMBER_OF_INSTRS; ++i)
     {

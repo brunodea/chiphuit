@@ -19,6 +19,7 @@ namespace cpu
 
     private:
         InstrType m_Type;
+        word m_Opcode;
     };
 
     enum class InstrType
