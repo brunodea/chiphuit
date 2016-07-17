@@ -1,5 +1,7 @@
 #include "mem.h"
 
+#include <iostream>
+#include <iomanip>
 #include <cstring> // memset
 #include <assert.h>
 
@@ -17,6 +19,13 @@ byte Memory::read(const word &address) const
     return m_Memory[address];
 }
 
+word Memory::read_word(const word &address) const
+{
+    auto lsb = read(address);
+    auto msb = read(address+1);
+    return (static_cast<word>(msb) << 8) | lsb;
+}
+
 void Memory::write(const word &address, const byte &value)
 {
     assert(address < MEMORY_SIZE_IN_BYTES);
@@ -25,10 +34,45 @@ void Memory::write(const word &address, const byte &value)
 
 void Memory::load_rom(const std::vector<byte> &rom)
 {
-    word address = MEMORY_ROM_START_ADDR;
-    for (const auto &b : rom)
+    assert(rom.size() < MEMORY_SIZE_IN_BYTES - MEMORY_ROM_START_ADDR);
+    // store MSBs first
+    for (auto addr = MEMORY_ROM_START_ADDR, i = 0; i + 1 < static_cast<int>(rom.size()); ++addr, ++i)
     {
-        m_Memory[address] = b;
-        address++;
+        m_Memory[addr++] = rom[i+1];
+        m_Memory[addr] = rom[i++];
     }
+}
+
+std::vector<byte> Memory::chunk(const word &start_address, const word &end_address)
+{
+    assert(start_address < end_address);
+    assert(end_address < MEMORY_SIZE_IN_BYTES);
+
+    return std::vector<byte>(&m_Memory[start_address], &m_Memory[end_address]);
+}
+
+void Memory::print_chunk(const word &start_address, const word &end_address)
+{
+    auto ch = chunk(start_address, end_address);
+    auto j = 0;
+    auto t = 0;
+    for (auto i = 0; i < ch.size(); ++i)
+    {
+        std::cout << std::setfill('0') << std::setw(2) << std::hex << int(ch[i]);
+
+        j++;
+        t++;
+        if (j == 16)
+        {
+            j = 0;
+            std::cout << '\n';
+            t = 0;
+        }
+        if (t == 2)
+        {
+            t = 0;
+            std::cout << ' ';
+        }
+    }
+    std::cout << "\n";
 }
