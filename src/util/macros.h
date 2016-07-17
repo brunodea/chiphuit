@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#define MEMORY_SIZE_IN_BYTES 0x1000
+
 #define NUMBER_OF_INSTRS 0xFFFF
 #define NUMBER_OF_GENREGS 15
 

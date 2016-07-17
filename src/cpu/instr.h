@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include "cpu.h"
+#include "mem.h"
 #include "util/macros.h"
 
 namespace chu
@@ -8,20 +10,25 @@ namespace chu
 namespace cpu
 {
     enum class InstrType;
+    class Cpu;
 
     class Instruction
     {
     public:
         Instruction();
-        Instruction(const word &opcode);
+        Instruction(const word &opcode, Cpu *cpu, mem::Memory *mem);
+
+        void execute() const;
+        std::string to_string() const noexcept;
 
         inline
         const InstrType &type() const noexcept;
-        std::string to_string() const noexcept;
 
     private:
         InstrType m_Type;
         word m_Opcode;
+        Cpu *m_Cpu;
+        mem::Memory *m_Memory;
     };
 
     enum class InstrType
