@@ -24,8 +24,6 @@ namespace cpu
 
         DReg m_PC; // program counter
         DReg m_SP; // stack pointer
-
-        Instruction m_Instrs[NUMBER_OF_INSTRS]; // for instruction translation
     }; // end of class Cpu
 
 } // end of namespace cpu
