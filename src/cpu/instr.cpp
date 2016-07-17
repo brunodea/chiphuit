@@ -218,6 +218,7 @@ std::string Instruction::to_string() const noexcept
         VVNib, VV, VB, BV, V, Addr, Nibble, None
     };
 
+    ss << "[0x" << std::hex << m_Opcode << "] ";
     auto order = ElemOrder::None;
     switch (m_Type)
     {
@@ -404,28 +405,28 @@ std::string Instruction::to_string() const noexcept
         break;
     case ElemOrder::VB:
         ss <<
-            " V"  << std::hex << (m_Opcode & 0x0F00) <<
+            " V"  << std::hex << ((m_Opcode >> 16) & 0x000F) <<
             ",0x" << std::hex << (m_Opcode & 0x00FF);
         break;
     case ElemOrder::BV:
         ss <<
             " 0x" << std::hex << (m_Opcode & 0x00FF) <<
-            ",V"  << std::hex << (m_Opcode & 0x0F00);
+            ",V"  << std::hex << ((m_Opcode >> 16) & 0x000F);
         break;
     case ElemOrder::VV:
         ss <<
-            " V" << std::hex << (m_Opcode & 0x00F0) <<
-            ",V" << std::hex << (m_Opcode & 0x0F00);
+            " V" << std::hex << ((m_Opcode >> 8 ) & 0x000F) <<
+            ",V" << std::hex << ((m_Opcode >> 16) & 0x000F);
         break;
     case ElemOrder::VVNib:
         ss <<
-            " V"  << std::hex << (m_Opcode & 0x00F0) <<
-            ",V"  << std::hex << (m_Opcode & 0x0F00) <<
+            " V"  << std::hex << ((m_Opcode >> 8 ) & 0x000F) <<
+            ",V"  << std::hex << ((m_Opcode >> 16) & 0x000F) <<
             ",0x" << std::hex << (m_Opcode & 0x000F);
         break;
     case ElemOrder::V:
         ss <<
-            " V" << std::hex << (m_Opcode & 0x0F00);
+            " V" << std::hex << ((m_Opcode >> 16) & 0x000F);
         break;
     default:
         break;
