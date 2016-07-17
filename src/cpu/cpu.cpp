@@ -10,6 +10,7 @@ Cpu::Cpu(mem::Memory *memory)
 {
     // Initialize registers with 0.
     std::memset(m_GenRegs, 0, sizeof m_GenRegs);
+    m_PC = MEMORY_ROM_START_ADDR;
 
     // initialize instructions array.
     for (word i = 0; i < NUMBER_OF_INSTRS; ++i)
