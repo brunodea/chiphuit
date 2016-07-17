@@ -400,35 +400,35 @@ std::string Instruction::to_string() const noexcept
     switch (order)
     {
     case ElemOrder::Addr:
-        ss << " 0x" << std::hex << (m_Opcode & 0x0FFF);
+        ss << " 0x" << std::setfill('0') << std::setw(2) << std::hex << (m_Opcode & 0x0FFF);
         break;
     case ElemOrder::Nibble:
-        ss << " 0x" << std::hex << (m_Opcode & 0x000F);
+        ss << " 0x" << std::setfill('0') << std::setw(2) << std::hex << (m_Opcode & 0x000F);
         break;
     case ElemOrder::VB:
         ss <<
-            " V"  << std::hex << ((m_Opcode >> 16) & 0x000F) <<
-            ",0x" << std::hex << (m_Opcode & 0x00FF);
+            " V"  << std::hex << ((m_Opcode >> 8) & 0x000F) <<
+            ",0x" << std::setfill('0') << std::setw(2) << std::hex << (m_Opcode & 0x00FF);
         break;
     case ElemOrder::BV:
         ss <<
-            " 0x" << std::hex << (m_Opcode & 0x00FF) <<
-            ",V"  << std::hex << ((m_Opcode >> 16) & 0x000F);
+            " 0x" << std::setfill('0') << std::setw(2) << std::hex << (m_Opcode & 0x00FF) <<
+            ",V"  << std::hex << ((m_Opcode >> 8) & 0x000F);
         break;
     case ElemOrder::VV:
         ss <<
-            " V" << std::hex << ((m_Opcode >> 8 ) & 0x000F) <<
-            ",V" << std::hex << ((m_Opcode >> 16) & 0x000F);
+            " V" << std::hex << ((m_Opcode >> 4 ) & 0x000F) <<
+            ",V" << std::hex << ((m_Opcode >> 8) & 0x000F);
         break;
     case ElemOrder::VVNib:
         ss <<
-            " V"  << std::hex << ((m_Opcode >> 8 ) & 0x000F) <<
-            ",V"  << std::hex << ((m_Opcode >> 16) & 0x000F) <<
-            ",0x" << std::hex << (m_Opcode & 0x000F);
+            " V"  << std::hex << ((m_Opcode >> 4 ) & 0x000F) <<
+            ",V"  << std::hex << ((m_Opcode >> 8) & 0x000F) <<
+            ",0x" << std::setfill('0') << std::setw(2) << std::hex << (m_Opcode & 0x000F);
         break;
     case ElemOrder::V:
         ss <<
-            " V" << std::hex << ((m_Opcode >> 16) & 0x000F);
+            " V" << std::hex << ((m_Opcode >> 8) & 0x000F);
         break;
     default:
         break;
@@ -440,8 +440,8 @@ std::string Instruction::to_string() const noexcept
 void Instruction::execute() const
 {
     auto addr = m_Opcode & 0x0FFF;
-    auto lreg = (m_Opcode >> 16) & 0x000F;
-    auto rreg = (m_Opcode >> 8) & 0x000F;
+    auto lreg = (m_Opcode >> 8) & 0x000F;
+    auto rreg = (m_Opcode >> 4) & 0x000F;
     auto imme = m_Opcode & 0x00FF;
 
     auto *x = &m_Cpu->m_GenRegs[lreg];
