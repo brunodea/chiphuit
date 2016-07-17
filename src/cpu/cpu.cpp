@@ -1,6 +1,7 @@
 #include "cpu.h"
 
 #include <iostream>
+#include <iomanip> // std::setfill // std::setw
 #include <cstring> // memset
 
 using namespace chu::cpu;
@@ -23,6 +24,7 @@ void Cpu::run()
 {
     while (true)
     {
+        std::cout << "(0x" << std::hex << std::setfill('0') << std::setw(3) << m_PC << ") ";
         auto instr = m_OpcodeInstrMap[m_Memory->read_word(m_PC++)].get();
         std::cout << instr->to_string() << '\n';
         instr->execute();
