@@ -445,7 +445,7 @@ void Instruction::execute() const
 
     auto *x = &m_Cpu->m_GenRegs[lreg];
     auto *y = &m_Cpu->m_GenRegs[rreg];
-    auto should_increment_pc = true;
+
     switch (m_Type)
     {
     case InstrType::Sys:
@@ -458,7 +458,7 @@ void Instruction::execute() const
         break;
     case InstrType::Ret:
         m_Cpu->m_PC = m_Cpu->pop_stack_word();
-        should_increment_pc = false;
+        goto bypass_pc_increment;
         break;
     case InstrType::Scr:
         break;
@@ -472,12 +472,12 @@ void Instruction::execute() const
         break;
     case InstrType::JpAddr:
         m_Cpu->m_PC = addr;
-        should_increment_pc = false;
+        goto bypass_pc_increment;
         break;
     case InstrType::Call:
         m_Cpu->push_stack_word(m_Cpu->m_PC);
         m_Cpu->m_PC = addr;
-        should_increment_pc = false;
+        goto bypass_pc_increment;
         break;
     case InstrType::SeVB:
         if (*x == imme) m_Cpu->m_PC++;
@@ -537,7 +537,7 @@ void Instruction::execute() const
         break;
     case InstrType::JpVAddr:
         m_Cpu->m_PC = addr + m_Cpu->m_GenRegs[0];
-        should_increment_pc = false;
+        goto bypass_pc_increment;
         break;
     case InstrType::RndVB:
         {
@@ -605,6 +605,8 @@ void Instruction::execute() const
     default:
         break;
     }
-    if (should_increment_pc)
-        m_Cpu->m_PC++;
+
+    m_Cpu->m_PC++;
+bypass_pc_increment:
+    ; // do nothing.
 }
