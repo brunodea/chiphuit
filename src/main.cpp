@@ -3,8 +3,6 @@
 #include <iterator>
 #include <vector>
 
-//#define NDEBUG // disable asserts
-
 #include "macros.h"
 #include "chiphuit.h"
 

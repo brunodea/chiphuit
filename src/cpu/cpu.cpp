@@ -24,9 +24,13 @@ void Cpu::run()
 {
     while (true)
     {
-        std::cout << "(0x" << std::hex << std::setfill('0') << std::setw(3) << m_PC << ") ";
         auto instr = m_OpcodeInstrMap[m_Memory->read_word(m_PC++)].get();
+
+#ifndef NDEBUG
+        std::cout << "(0x" << std::hex << std::setfill('0') << std::setw(3) << (m_PC-1) << ") ";
         std::cout << instr->to_string() << '\n';
+#endif
+
         instr->execute();
     }
 }
