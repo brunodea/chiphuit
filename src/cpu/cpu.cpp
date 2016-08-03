@@ -48,12 +48,12 @@ word Cpu::pop_stack_word()
     return (static_cast<word>(msb) << 8) | lsb;
 }
 
-void Cpu::push_stack_byte(const byte &b)
+void Cpu::push_stack_byte(const byte b)
 {
     m_Memory->write(++m_SP, b);
 }
 
-void Cpu::push_stack_word(const word &w)
+void Cpu::push_stack_word(const word w)
 {
     auto lsb = w & 0x00FF;
     auto msb = (w & 0xFF00) >> 8;

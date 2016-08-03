@@ -16,7 +16,7 @@ namespace cpu
     {
     public:
         Instruction();
-        Instruction(const word &opcode, Cpu *cpu, mem::Memory *mem);
+        Instruction(const word opcode, Cpu *cpu, mem::Memory *mem);
 
         void execute() const;
         std::string to_string() const noexcept;

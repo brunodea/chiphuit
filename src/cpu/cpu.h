@@ -23,8 +23,8 @@ namespace cpu
         byte pop_stack_byte();
         word pop_stack_word();
 
-        void push_stack_byte(const byte &b);
-        void push_stack_word(const word &w);
+        void push_stack_byte(const byte b);
+        void push_stack_word(const word w);
 
     private:
         SReg m_GenRegs[NUMBER_OF_GENREGS]; // general purpose registers

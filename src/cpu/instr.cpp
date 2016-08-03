@@ -15,7 +15,7 @@ Instruction::Instruction()
     : m_Type(InstrType::NOP), m_Opcode(0), m_Cpu(nullptr), m_Memory(nullptr)
 {}
 
-Instruction::Instruction(const word &opcode, Cpu *cpu, Memory *mem)
+Instruction::Instruction(const word opcode, Cpu *cpu, Memory *mem)
     : m_Opcode(opcode), m_Cpu(cpu), m_Memory(mem)
 {
     switch (opcode)
