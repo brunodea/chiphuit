@@ -7,6 +7,7 @@
 #include "mem.h"
 #include "instr.h"
 #include "macros.h"
+#include "video.h"
 
 namespace chu
 {
@@ -19,5 +20,6 @@ namespace chu
     private:
         std::unique_ptr<cpu::Cpu> m_Cpu;
         std::unique_ptr<mem::Memory> m_Memory;
+        std::unique_ptr<video::Video> m_Video;
     };
 } // end of namespace chu

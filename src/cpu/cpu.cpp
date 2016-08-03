@@ -20,19 +20,16 @@ Cpu::Cpu(mem::Memory *memory)
     }
 }
 
-void Cpu::run()
+void Cpu::step()
 {
-    while (true)
-    {
-        auto instr = m_OpcodeInstrMap[m_Memory->read_word(m_PC++)].get();
+    auto instr = m_OpcodeInstrMap[m_Memory->read_word(m_PC++)].get();
 
 #ifndef NDEBUG
-        std::cout << "(0x" << std::hex << std::setfill('0') << std::setw(3) << (m_PC-1) << ") ";
-        std::cout << instr->to_string() << '\n';
+    std::cout << "(0x" << std::hex << std::setfill('0') << std::setw(3) << (m_PC-1) << ") ";
+    std::cout << instr->to_string() << '\n';
 #endif
 
-        instr->execute();
-    }
+    instr->execute();
 }
 
 byte Cpu::pop_stack_byte()

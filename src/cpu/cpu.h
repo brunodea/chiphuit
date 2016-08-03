@@ -18,7 +18,7 @@ namespace cpu
     public:
         Cpu(mem::Memory *memory);
 
-        void run();
+        void step();
     private:
         byte pop_stack_byte();
         word pop_stack_word();

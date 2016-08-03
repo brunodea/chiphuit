@@ -8,6 +8,9 @@
 #define NUMBER_OF_INSTRS 0xFFFF
 #define NUMBER_OF_GENREGS 15
 
+#define WINDOW_WIDTH 64
+#define WINDOW_HEIGHT 32
+
 using SReg = uint8_t;  // Simple Register
 using DReg = uint16_t; // Double Register
 
