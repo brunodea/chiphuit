@@ -52,6 +52,7 @@ void Memory::print_chunk(const word &start_address, const word &end_address)
     auto ch = chunk(start_address, end_address);
     auto j = 0;
     auto t = 0;
+    std::cout << "000000: ";
     for (auto i = 0; i < ch.size(); ++i)
     {
         std::cout << std::setfill('0') << std::setw(2) << std::hex << int(ch[i]);
@@ -62,6 +63,7 @@ void Memory::print_chunk(const word &start_address, const word &end_address)
         {
             j = 0;
             std::cout << '\n';
+            std::cout << std::setfill('0') << std::setw(6) << std::hex << int(i) << ": ";
             t = 0;
         }
         if (t == 2)
