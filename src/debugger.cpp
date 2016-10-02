@@ -2,16 +2,31 @@
 
 #include <string>
 #include <iostream>
-#include <sstream>
 #include <iomanip> // std::setfill // std::setw
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <vector>
 
 #include "cpu.h"
+#include "mem.h"
 
 using namespace chu;
 using namespace dbg;
+
+static void print_help()
+{
+    using namespace std;
+
+    cout << "===========" << endl;
+    cout << "Comand List" << endl;
+    cout << "===========" << endl;
+    cout << "step [N] -- step N times" << endl;
+    cout << "mem 0x<begin_in_hex> 0x<end_in_hex> -- prints a chunk of the memory from begin to end in hex." << endl;
+    cout << "run -- run the rom without coming back to the debugger console." << endl;
+    cout << "quit, exit -- exit ChipHuit" << endl;
+    cout << "help -- show this" << endl;
+    cout << "---------------------------" << endl;
+}
 
 static void print_instr(const cpu::Instruction *instr, const word addr)
 {
@@ -21,7 +36,7 @@ static void print_instr(const cpu::Instruction *instr, const word addr)
     cout << instr->to_string() << endl;
 }
 
-Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr)
+Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, const mem::Memory *mem)
 {
     switch (m_Command->type())
     {
@@ -31,6 +46,9 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr)
             print_instr(last_instr, cpu->m_PC-1);
             goto quit_loop;
         }
+        break;
+    case CommandType::RUN:
+        goto quit_loop;
         break;
     default:
         break;
@@ -58,13 +76,25 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr)
                         goto quit_loop;
                     }
                     break;
-                case CommandType::PRINT_MEMORY:
+                case CommandType::MEMORY:
+                    {
+                        auto mem_cmd = static_cast<MemCommand *>(m_Command.get());
+                        mem->print_chunk(mem_cmd->begin(), mem_cmd->end());
+                    }
+                    break;
+                case CommandType::RUN:
+                    goto quit_loop;
                     break;
                 case CommandType::QUIT:
                     goto quit_loop;
                     break;
                 case CommandType::ERROR:
+                    std::cout << "***ERROR" << std::endl;
                     std::cout << "Unknown command: '" << command_str << "'" << std::endl;
+                    print_help();
+                    break;
+                case CommandType::HELP:
+                    print_help();
                     break;
             }
         }
@@ -94,13 +124,43 @@ bool Debugger::parse(std::vector<std::string> &cmd_tokens)
                 }
                 catch (...)
                 {
-                    std::cout << "Invalid parameter for command STEP" << std::endl;
+                    std::cout << "Invalid parameter for command STEP." << std::endl;
                     success = false;
                 }
+            }
+            else if (cmd_tokens.size() > 2)
+            {
+                std::cout << "Invalid number of arguments." << std::endl;
+                success = false;
             }
             if (success)
                 m_Command = std::make_unique<StepCommand>(num);
         }
+        else if (boost::iequals(cmd_root, "mem"))
+        {
+            success = cmd_tokens.size() == 3;
+            if (success)
+            {
+                try
+                {
+                    auto begin = std::stoul(cmd_tokens[1], nullptr, 16);
+                    auto end = std::stoul(cmd_tokens[2], nullptr, 16);
+                    if (begin < end)
+                        m_Command = std::make_unique<MemCommand>(begin, end);
+                    else
+                        std::cout << "Begin can't be bigger than ending address." << std::endl;
+                }
+                catch (...)
+                {
+                    std::cout << "Invalid parameters for command MEM." << std::endl;
+                    success = false;
+                }
+            }
+            else
+                std::cout << "Invalid number of arguments." << std::endl;
+        }
+        else if (boost::iequals(cmd_root, "run"))
+            m_Command = std::make_unique<Command>(CommandType::RUN);
     }
     return success;
 }

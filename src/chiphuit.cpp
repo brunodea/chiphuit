@@ -11,10 +11,6 @@ ChipHuit::ChipHuit(const std::vector<byte> &rom)
     m_Memory = std::make_unique<mem::Memory>();
     m_Memory->load_rom(rom);
 
-#ifndef NDEBUG
-    m_Memory->print_chunk(MEMORY_ROM_START_ADDR, MEMORY_ROM_START_ADDR+rom.size());
-#endif
-
     m_Video = std::make_unique<video::Video>();
     m_Cpu = std::make_unique<cpu::Cpu>(m_Memory.get(), m_Video.get());
 }
@@ -45,7 +41,7 @@ void ChipHuit::start()
         m_Video->update();
 
  #ifndef NDEBUG
-        auto cmd = debugger.run(m_Cpu.get(), &instr);
+        auto cmd = debugger.run(m_Cpu.get(), &instr, m_Memory.get());
         switch (cmd->type())
         {
         case dbg::CommandType::QUIT:

@@ -21,14 +21,14 @@ namespace dbg
 
     enum class CommandType
     {
-        STEP, QUIT, ERROR, PRINT_MEMORY
+        STEP, QUIT, ERROR, MEMORY, HELP, RUN
     };
 
     class Debugger
     {
     public:
         Debugger() : m_Command(std::make_unique<Command>()) {}
-        Command *run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr);
+        Command *run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, const mem::Memory *mem);
 
     private:
         bool parse(std::vector<std::string> &cmd_tokens);
@@ -58,5 +58,16 @@ namespace dbg
         unsigned int m_Steps;
     };
 
+    class MemCommand : public Command
+    {
+    public:
+        MemCommand(unsigned int begin, unsigned int end)
+            : Command(CommandType::MEMORY), m_Begin(begin), m_End(end) {}
+        unsigned int begin() const { return m_Begin; }
+        unsigned int end() const { return m_End; }
+    private:
+        unsigned int m_Begin;
+        unsigned int m_End;
+    };
 } // end of namespace dbg
 } // end of namespace chu
