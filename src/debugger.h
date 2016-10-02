@@ -21,7 +21,7 @@ namespace dbg
 
     enum class CommandType
     {
-        STEP, QUIT, ERROR, MEMORY, HELP, RUN
+        STEP, QUIT, ERROR, MEMORY, HELP, RUN, CPU
     };
 
     class Debugger

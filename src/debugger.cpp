@@ -85,6 +85,20 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, 
                 case CommandType::RUN:
                     goto quit_loop;
                     break;
+                case CommandType::CPU:
+                    {
+                        for (int i = 0; i < NUMBER_OF_GENREGS; i++)
+                        {
+                            std::cout << "V" << i << "       = 0x" << std::hex << int(cpu->m_GenRegs[i]) << std::endl;
+                        }
+                        std::cout << "PC       = 0x" << std::hex << int (cpu->m_PC      ) << std::endl;
+                        std::cout << "SP       = 0x" << std::hex << int (cpu->m_SP      ) << std::endl;
+                        std::cout << "FlagReg  = 0x" << std::hex << int (cpu->m_FlagReg ) << std::endl;
+                        std::cout << "MemReg   = 0x" << std::hex << int (cpu->m_MemReg  ) << std::endl;
+                        std::cout << "DelayReg = 0x" << std::hex << int (cpu->m_DelayReg) << std::endl;
+                        std::cout << "SoundReg = 0x" << std::hex << int (cpu->m_SoundReg) << std::endl;
+                    }
+                    break;
                 case CommandType::QUIT:
                     goto quit_loop;
                     break;
@@ -161,6 +175,8 @@ bool Debugger::parse(std::vector<std::string> &cmd_tokens)
         }
         else if (boost::iequals(cmd_root, "run"))
             m_Command = std::make_unique<Command>(CommandType::RUN);
+        else if (boost::iequals(cmd_root, "cpu"))
+            m_Command = std::make_unique<Command>(CommandType::CPU);
     }
     return success;
 }

@@ -35,13 +35,13 @@ void Memory::write(const word address, const byte value)
 
 void Memory::load_rom(const std::vector<byte> &rom)
 {
-    assert(rom.size() < MEMORY_SIZE_IN_BYTES - MEMORY_ROM_START_ADDR);
-    for (int i = 0; i < rom.size() - 1; i += 2)
-    {
-        m_Memory[i + MEMORY_ROM_START_ADDR] = rom[i + 1];
-        m_Memory[i + MEMORY_ROM_START_ADDR + 1] = rom[i];
-    }
-//    std::copy_n(rom.begin(), rom.size(), &m_Memory[MEMORY_ROM_START_ADDR]);
+//    assert(rom.size() < MEMORY_SIZE_IN_BYTES - MEMORY_ROM_START_ADDR);
+//    for (int i = 0; i < rom.size() - 1; i += 2)
+//    {
+//        m_Memory[i + MEMORY_ROM_START_ADDR] = rom[i + 1];
+//        m_Memory[i + MEMORY_ROM_START_ADDR + 1] = rom[i];
+//    }
+    std::copy_n(rom.begin(), rom.size(), &m_Memory[MEMORY_ROM_START_ADDR]);
 }
 
 std::vector<byte> Memory::chunk(const word start_address, word end_address) const
