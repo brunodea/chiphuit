@@ -11,6 +11,13 @@
 #define WINDOW_WIDTH 64
 #define WINDOW_HEIGHT 32
 
+#define BITS_IN_BYTE 8
+
+#define BYTES_IN_WIDTH (WINDOW_WIDTH / BITS_IN_BYTE)
+#define BYTES_IN_HEIGHT WINDOW_HEIGHT
+
+#define BYTES_IN_SCREEN BYTES_IN_WIDTH * BYTES_IN_HEIGHT
+
 using SReg = uint8_t;  // Simple Register
 using DReg = uint16_t; // Double Register
 

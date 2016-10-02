@@ -1,24 +1,37 @@
 #pragma once
 
 #include <memory>
+#include <array>
 
 #include "util/macros.h"
 #include "instr.h"
 #include "mem.h"
+#include "video.h"
+#include "debugger.h"
 
 namespace chu
 {
+namespace dbg
+{
+    class Debugger;
+} // end of namespace dbg
+
 namespace cpu
 {
     class Instruction;
+    using OpcodeMap = std::array<Instruction, NUMBER_OF_INSTRS>;
 
     class Cpu
     {
+    friend class dbg::Debugger;
     friend class Instruction;
-    public:
-        Cpu(mem::Memory *memory);
 
-        void step();
+    public:
+        Cpu(mem::Memory *memory, video::Video *video);
+
+        Instruction step();
+        void update_delay_register();
+
     private:
         byte pop_stack_byte();
         word pop_stack_word();
@@ -38,7 +51,9 @@ namespace cpu
         DReg m_SP; // stack pointer
 
         mem::Memory *m_Memory;
-        std::unique_ptr<Instruction> m_OpcodeInstrMap[NUMBER_OF_INSTRS];
+        video::Video *m_Video;
+
+        std::unique_ptr<OpcodeMap> m_OpcodeMap;
     }; // end of class Cpu
 
 } // end of namespace cpu

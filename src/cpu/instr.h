@@ -4,6 +4,7 @@
 #include "cpu.h"
 #include "mem.h"
 #include "util/macros.h"
+#include "video.h"
 
 namespace chu
 {
@@ -16,7 +17,7 @@ namespace cpu
     {
     public:
         Instruction();
-        Instruction(const word opcode, Cpu *cpu, mem::Memory *mem);
+        Instruction(const word opcode, Cpu *cpu, mem::Memory *mem, video::Video *video);
 
         void execute() const;
         std::string to_string() const noexcept;
@@ -29,6 +30,7 @@ namespace cpu
         word m_Opcode;
         Cpu *m_Cpu;
         mem::Memory *m_Memory;
+        video::Video *m_Video;
     };
 
     enum class InstrType
@@ -53,5 +55,7 @@ namespace cpu
         SkpV, SknpV,
         NOP, // no-op
     };
+    
+    using OpcodeMap = std::array<Instruction, NUMBER_OF_INSTRS>;
 } // end of namespace cpu
 } // end of namespace chu

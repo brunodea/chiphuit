@@ -1,8 +1,7 @@
 #include "chiphuit.h"
 
-#include "mem.h"
-#include "macros.h"
-
+#include <iostream>
+#include <chrono>
 #include <SDL2/SDL.h>
 
 using namespace chu;
@@ -16,16 +15,19 @@ ChipHuit::ChipHuit(const std::vector<byte> &rom)
     m_Memory->print_chunk(MEMORY_ROM_START_ADDR, MEMORY_ROM_START_ADDR+rom.size());
 #endif
 
-    m_Cpu = std::make_unique<cpu::Cpu>(m_Memory.get());
     m_Video = std::make_unique<video::Video>();
+    m_Cpu = std::make_unique<cpu::Cpu>(m_Memory.get(), m_Video.get());
 }
 
 void ChipHuit::start()
 {
-    const unsigned int delta = 5;
-    m_Video->setup(WINDOW_WIDTH*delta, WINDOW_HEIGHT*delta);
+    m_Video->setup(5);
 
-    while (true)
+    auto start = std::chrono::steady_clock::now();
+#ifndef NDEBUG
+    dbg::Debugger debugger;
+#endif
+    do
     {
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -33,8 +35,27 @@ void ChipHuit::start()
             if (event.type == SDL_QUIT)
                 goto stop;
         }
-        m_Cpu->step();
-    }
+        auto instr = m_Cpu->step();
+        if ((std::chrono::steady_clock::now() - start).count() >= 60)
+        {
+            // 60 hz
+            start = std::chrono::steady_clock::now();
+            m_Cpu->update_delay_register();
+        }
+        m_Video->update();
+
+ #ifndef NDEBUG
+        auto cmd = debugger.run(m_Cpu.get(), &instr);
+        switch (cmd->type())
+        {
+        case dbg::CommandType::QUIT:
+            goto stop;
+            break;
+        default:
+            break;
+        }
+#endif
+   } while(true);
 
 stop:
     ;

@@ -8,6 +8,7 @@
 #include "instr.h"
 #include "macros.h"
 #include "video.h"
+#include "debugger.h"
 
 namespace chu
 {

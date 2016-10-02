@@ -4,32 +4,30 @@
 #include <iomanip> // std::setfill // std::setw
 #include <cstring> // memset
 
+#include "instr.h"
+
 using namespace chu::cpu;
 
-Cpu::Cpu(mem::Memory *memory)
+Cpu::Cpu(mem::Memory *memory, video::Video *video)
     : m_MemReg(0), m_DelayReg(0), m_SoundReg(0),
-    m_PC(MEMORY_ROM_START_ADDR), m_SP(0), m_Memory(memory)
+    m_PC(MEMORY_ROM_START_ADDR), m_SP(0), m_Memory(memory), m_Video(video)
 {
     // Initialize registers with 0.
     std::memset(m_GenRegs, 0, sizeof m_GenRegs);
 
     // initialize instructions array.
+    m_OpcodeMap = std::make_unique<OpcodeMap>();
     for (word i = 0; i < NUMBER_OF_INSTRS; ++i)
     {
-        m_OpcodeInstrMap[i] = std::make_unique<Instruction>(i, this, m_Memory);
+        (*m_OpcodeMap)[i] = Instruction { i, this, m_Memory, m_Video };
     }
 }
 
-void Cpu::step()
+Instruction Cpu::step()
 {
-    auto instr = m_OpcodeInstrMap[m_Memory->read_word(m_PC++)].get();
-
-#ifndef NDEBUG
-    std::cout << "(0x" << std::hex << std::setfill('0') << std::setw(3) << (m_PC-1) << ") ";
-    std::cout << instr->to_string() << '\n';
-#endif
-
-    instr->execute();
+    auto instr = (*m_OpcodeMap)[m_Memory->read_word(m_PC++)];
+    instr.execute();
+    return instr;
 }
 
 byte Cpu::pop_stack_byte()
@@ -56,4 +54,9 @@ void Cpu::push_stack_word(const word w)
     auto msb = (w & 0xFF00) >> 8;
     push_stack_byte(msb);
     push_stack_byte(lsb);
+}
+
+void Cpu::update_delay_register()
+{
+    m_DelayReg = m_DelayReg == 0 ? 0 : m_DelayReg - 1;
 }

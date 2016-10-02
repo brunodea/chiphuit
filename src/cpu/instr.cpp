@@ -10,13 +10,14 @@
 
 using namespace chu::cpu;
 using namespace chu::mem;
+using namespace chu::video;
 
 Instruction::Instruction()
-    : m_Type(InstrType::NOP), m_Opcode(0), m_Cpu(nullptr), m_Memory(nullptr)
+    : m_Type(InstrType::NOP), m_Opcode(0), m_Cpu(nullptr), m_Memory(nullptr), m_Video(nullptr)
 {}
 
-Instruction::Instruction(const word opcode, Cpu *cpu, Memory *mem)
-    : m_Opcode(opcode), m_Cpu(cpu), m_Memory(mem)
+Instruction::Instruction(const word opcode, Cpu *cpu, Memory *mem, Video *video)
+    : m_Opcode(opcode), m_Cpu(cpu), m_Memory(mem), m_Video(video)
 {
     switch (opcode)
     {
@@ -548,8 +549,18 @@ void Instruction::execute() const
         }
         break;
     case InstrType::DrwVV0:
-        break;
     case InstrType::DrwVVN:
+        {
+            std::cout << "DRWVVN" << std::endl;
+            bool set_vf = false;
+            imme = imme == 0 ? 1 : imme;
+            for (auto i = 0; i < imme; i++)
+            {
+                auto sprite_byte = m_Memory->read(m_Cpu->m_MemReg + i);
+                set_vf = m_Video->set_byte(sprite_byte, *x, *y);
+            }
+            m_Cpu->m_FlagReg = set_vf ? 1 : 0;
+        }
         break;
     case InstrType::SkpV:
         break;
