@@ -550,7 +550,7 @@ void Instruction::execute() const
     case InstrType::DrwVV0:
     case InstrType::DrwVVN:
         {
-            std::cout << "DRWVVN" << std::endl;
+            std::cout << "DRWVVN" << '\n';
             bool set_vf = false;
             imme = imme == 0 ? 1 : imme;
             for (auto i = 0; i < imme; i++)

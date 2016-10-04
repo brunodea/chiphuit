@@ -1,6 +1,7 @@
 #include "debugger.h"
 
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <iomanip> // std::setfill // std::setw
 #include <boost/algorithm/string.hpp>
@@ -17,23 +18,23 @@ static void print_help()
 {
     using namespace std;
 
-    cout << "===========" << endl;
-    cout << "Comand List" << endl;
-    cout << "===========" << endl;
-    cout << "step [N] -- step N times" << endl;
-    cout << "mem 0x<begin_in_hex> 0x<end_in_hex> -- prints a chunk of the memory from begin to end in hex." << endl;
-    cout << "run -- run the rom without coming back to the debugger console." << endl;
-    cout << "quit, exit -- exit ChipHuit" << endl;
-    cout << "help -- show this" << endl;
-    cout << "---------------------------" << endl;
+    cout << "===========" << std::endl;
+    cout << "Comand List" << std::endl;
+    cout << "===========" << std::endl;
+    cout << "step [N] -- step N times" << std::endl;
+    cout << "mem 0x<begin_in_hex> 0x<end_in_hex> -- prints a chunk of the memory from begin to end in hex." << std::endl;
+    cout << "run -- run the rom without coming back to the debugger console." << std::endl;
+    cout << "quit, exit -- exit ChipHuit" << std::endl;
+    cout << "help -- show this" << std::endl;
+    cout << "---------------------------" << std::endl;
 }
 
-static void print_instr(const cpu::Instruction *instr, const word addr)
+void Debugger::print_instr(const cpu::Instruction &instr)
 {
     using namespace std;
 
-    cout << "(0x" << hex << setfill('0') << setw(3) << addr << ") ";
-    cout << instr->to_string() << endl;
+    cout << "(" << hex << showbase << setfill('0') << setw(3) << m_LastAddr << ") ";
+    cout << instr.to_string() << std::endl;
 }
 
 Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, const mem::Memory *mem)
@@ -43,7 +44,7 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, 
     case CommandType::STEP:
         if (!static_cast<StepCommand *>(m_Command.get())->is_done())
         {
-            print_instr(last_instr, cpu->m_PC-1);
+            print_instr(*last_instr);
             goto quit_loop;
         }
         break;
@@ -72,7 +73,7 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, 
             {
                 case CommandType::STEP:
                     {
-                        print_instr(last_instr, cpu->m_PC-1);
+                        print_instr(*last_instr);
                         goto quit_loop;
                     }
                     break;
@@ -87,16 +88,40 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, 
                     break;
                 case CommandType::CPU:
                     {
+                        std::stringstream regs_ss;
                         for (int i = 0; i < NUMBER_OF_GENREGS; i++)
                         {
-                            std::cout << "V" << i << "       = 0x" << std::hex << int(cpu->m_GenRegs[i]) << std::endl;
+                            regs_ss << std::setfill(' ') << std::setw(5) << "V" << std::hex << i;
                         }
-                        std::cout << "PC       = 0x" << std::hex << int (cpu->m_PC      ) << std::endl;
-                        std::cout << "SP       = 0x" << std::hex << int (cpu->m_SP      ) << std::endl;
-                        std::cout << "FlagReg  = 0x" << std::hex << int (cpu->m_FlagReg ) << std::endl;
-                        std::cout << "MemReg   = 0x" << std::hex << int (cpu->m_MemReg  ) << std::endl;
-                        std::cout << "DelayReg = 0x" << std::hex << int (cpu->m_DelayReg) << std::endl;
-                        std::cout << "SoundReg = 0x" << std::hex << int (cpu->m_SoundReg) << std::endl;
+                        const auto regs = regs_ss.str();
+                        const std::string gentitle = "Generic Registers";
+                        std::cout << gentitle << std::setfill('-') <<
+                            std::setw(regs.length()-gentitle.length()+1) << '\n';
+                        std::cout << regs << std::endl;
+                        for (int i = 0; i < NUMBER_OF_GENREGS; i++)
+                        {
+                            std::cout << std::setfill(' ') << std::setw(6)
+                                << std::hex << std::showbase << int(cpu->m_GenRegs[i]);
+                        }
+                        const std::string spectitle = "Special Registers";
+                        std::cout << std::endl << spectitle << std::setfill('-') <<
+                            std::setw(regs.length()-spectitle.length()+1) << '\n';
+                        const auto w = 9;
+                        std::cout
+                            << std::setfill(' ') << std::setw(9) << "PC"
+                            << std::setfill(' ') << std::setw(9) << "SP"
+                            << std::setfill(' ') << std::setw(9) << "FlagReg"
+                            << std::setfill(' ') << std::setw(9) << "MemReg"
+                            << std::setfill(' ') << std::setw(9) << "DelayReg"
+                            << std::setfill(' ') << std::setw(9) << "SoundReg"
+                            << std::endl
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_PC)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_SP)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_FlagReg)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_MemReg)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_DelayReg)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_SoundReg)
+                            << std::endl;
                     }
                     break;
                 case CommandType::QUIT:
@@ -114,7 +139,7 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, 
         }
     }
 quit_loop:
-
+    m_LastAddr = cpu->m_PC;
     return m_Command.get();
 }
 

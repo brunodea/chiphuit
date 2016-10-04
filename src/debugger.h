@@ -6,6 +6,7 @@
 
 #include "cpu.h"
 #include "instr.h"
+#include "macros.h"
 
 namespace chu
 {
@@ -27,14 +28,16 @@ namespace dbg
     class Debugger
     {
     public:
-        Debugger() : m_Command(std::make_unique<Command>()) {}
+        Debugger() : m_Command(std::make_unique<Command>()), m_LastAddr(MEMORY_ROM_START_ADDR) {}
         Command *run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, const mem::Memory *mem);
 
     private:
         bool parse(std::vector<std::string> &cmd_tokens);
+        void print_instr(const cpu::Instruction &instr);
 
     private:
         std::unique_ptr<Command> m_Command;
+        word m_LastAddr;
     };
 
     class Command
