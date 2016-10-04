@@ -395,6 +395,7 @@ std::string Instruction::to_string() const noexcept
             order = ElemOrder::V;
             break;
         default:
+            ss << "***BUG: No Instruction type found.";
             break;
     }
 
@@ -460,7 +461,6 @@ void Instruction::execute() const
         break;
     case InstrType::Ret:
         m_Cpu->m_PC = m_Cpu->pop_stack_word();
-        goto bypass_pc_increment;
         break;
     case InstrType::Scr:
         break;
@@ -479,7 +479,6 @@ void Instruction::execute() const
     case InstrType::Call:
         m_Cpu->push_stack_word(m_Cpu->m_PC);
         m_Cpu->m_PC = addr;
-        goto bypass_pc_increment;
         break;
     case InstrType::SeVB:
         if (*x == imme) m_Cpu->m_PC++;
