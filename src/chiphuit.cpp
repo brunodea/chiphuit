@@ -4,6 +4,10 @@
 #include <chrono>
 #include <SDL2/SDL.h>
 
+#ifndef NDEBUG
+#include "debugger.h"
+#endif
+
 using namespace chu;
 
 ChipHuit::ChipHuit(const std::vector<byte> &rom)
