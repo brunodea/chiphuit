@@ -45,12 +45,12 @@ void Video::setup(const unsigned int delta)
 
 void Video::clear_screen()
 {
+    memset(m_Pixels, 0, sizeof m_Pixels);
 }
 
 bool Video::set_byte(const byte b, const unsigned int x, const unsigned int y)
 {
-    std::cout << "set_byte: " << x << "," << y << std::endl;
-
+    //std::cout << std::flush << x << ',' << y << std::endl;
     auto pb = pixel_byte(x, y);
     auto old_byte = m_Pixels[pb];
     auto res = b^old_byte;

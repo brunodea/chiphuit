@@ -60,10 +60,10 @@ void Memory::print_chunk(const word start_address, const word end_address) const
     auto j = 0;
     auto t = 0;
     auto addr = start_address;
-    std::cout << std::setfill('0') << std::setw(6) << std::hex << addr << ": ";
+    std::cout << std::setfill('0') << std::setw(6) << std::hex << int(addr) << ": ";
     for (auto i = 0; i < ch.size(); ++i)
     {
-        std::cout << std::setfill('0') << std::setw(2) << std::hex << int(ch[i]);
+        std::cout << std::setfill('0') << std::setw(2) << std::hex << int(ch[i]) << ' ';
 
         j++;
         t++;
@@ -71,7 +71,7 @@ void Memory::print_chunk(const word start_address, const word end_address) const
         {
             addr += j;
             j = 0;
-            std::cout << '\n';
+            std::cout << std::endl;
             std::cout << std::setfill('0') << std::setw(6) << std::hex << int(addr) << ": ";
             t = 0;
         }
@@ -81,5 +81,5 @@ void Memory::print_chunk(const word start_address, const word end_address) const
             std::cout << ' ';
         }
     }
-    std::cout << "\n";
+    std::cout << std::endl;
 }
