@@ -473,7 +473,7 @@ void Instruction::execute() const
     case InstrType::High:
         break;
     case InstrType::JpAddr:
-        m_Cpu->m_PC = addr;
+        m_Cpu->m_PC = addr-1;
         goto bypass_pc_increment;
         break;
     case InstrType::Call:
@@ -550,13 +550,12 @@ void Instruction::execute() const
     case InstrType::DrwVV0:
     case InstrType::DrwVVN:
         {
-            std::cout << "DRWVVN" << '\n';
             bool set_vf = false;
             imme = imme == 0 ? 1 : imme;
             for (auto i = 0; i < imme; i++)
             {
-                auto sprite_byte = m_Memory->read(m_Cpu->m_MemReg + i);
-                set_vf = m_Video->set_byte(sprite_byte, *x, *y);
+                set_vf = m_Video->set_byte(
+                        m_Memory->read(m_Cpu->m_MemReg + i), *x, (*y)+i);
             }
             m_Cpu->m_FlagReg = set_vf ? 1 : 0;
         }
