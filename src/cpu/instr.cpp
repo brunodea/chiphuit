@@ -627,7 +627,7 @@ void Instruction::execute() const
         break;
     }
 
-    m_Cpu->m_PC++;
+    m_Cpu->m_PC += 2;
 bypass_pc_increment:
     ; // do nothing.
 }

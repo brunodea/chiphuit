@@ -25,7 +25,7 @@ Cpu::Cpu(mem::Memory *memory, video::Video *video)
 
 Instruction Cpu::step()
 {
-    auto instr = (*m_OpcodeMap)[m_Memory->read_word(m_PC++)];
+    auto instr = (*m_OpcodeMap)[m_Memory->read_word(m_PC)];
     instr.execute();
     return instr;
 }
