@@ -14,18 +14,18 @@
 using namespace chu;
 using namespace dbg;
 
-static void print_help()
+void Debugger::print_help()
 {
     using namespace std;
 
-    cout << "===========" << std::endl;
+    cout << "==================" << std::endl;
     cout << "Comand List" << std::endl;
-    cout << "===========" << std::endl;
-    cout << "step [N] -- step N times" << std::endl;
-    cout << "mem 0x<begin_in_hex> 0x<end_in_hex> -- prints a chunk of the memory from begin to end in hex." << std::endl;
-    cout << "run -- run the rom without coming back to the debugger console." << std::endl;
-    cout << "quit, exit -- exit ChipHuit" << std::endl;
-    cout << "help -- show this" << std::endl;
+    cout << "==================" << std::endl;
+    cout << "step [N]\n\t\t-- step N times" << std::endl;
+    cout << "mem 0x<begin_in_hex> 0x<end_in_hex>\n\t\t-- prints a chunk of the memory from begin to end in hex." << std::endl;
+    cout << "run\n\t\t-- run the rom without coming back to the debugger console." << std::endl;
+    cout << "quit, exit\n\t\t-- exit ChipHuit" << std::endl;
+    cout << "help\n\t\t-- show this" << std::endl;
     cout << "---------------------------" << std::endl;
 }
 
@@ -58,7 +58,7 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, 
     while (true)
     {
         std::string command_str;
-        std::cout << ">";
+        std::cout << "> ";
         std::getline(std::cin, command_str);
 
         boost::trim(command_str);

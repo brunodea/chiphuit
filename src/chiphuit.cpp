@@ -26,6 +26,8 @@ void ChipHuit::start()
     auto start = std::chrono::steady_clock::now();
 #ifndef NDEBUG
     dbg::Debugger debugger;
+    std::cout << ">>>>>>>> Debug Mode <<<<<<<<" << std::endl;
+    debugger.print_help();
 #endif
     do
     {

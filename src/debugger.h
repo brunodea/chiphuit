@@ -30,6 +30,7 @@ namespace dbg
     public:
         Debugger() : m_Command(std::make_unique<Command>()), m_LastAddr(MEMORY_ROM_START_ADDR) {}
         Command *run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, const mem::Memory *mem);
+        void print_help();
 
     private:
         bool parse(std::vector<std::string> &cmd_tokens);
