@@ -452,8 +452,8 @@ void Instruction::execute() const
     switch (m_Type)
     {
     case InstrType::Sys:
-        // do nothing instead?
-        m_Cpu->m_PC = addr;
+        // TODO: really NOP?
+        //m_Cpu->m_PC = addr;
         break;
     case InstrType::ScdN:
         break;
@@ -473,7 +473,7 @@ void Instruction::execute() const
     case InstrType::High:
         break;
     case InstrType::JpAddr:
-        m_Cpu->m_PC = addr-1;
+        m_Cpu->m_PC = addr;
         goto bypass_pc_increment;
         break;
     case InstrType::Call:
@@ -481,13 +481,13 @@ void Instruction::execute() const
         m_Cpu->m_PC = addr;
         break;
     case InstrType::SeVB:
-        if (*x == imme) m_Cpu->m_PC++;
+        if (*x == imme) m_Cpu->m_PC += 2;
         break;
     case InstrType::SneVB:
-        if (*x != imme) m_Cpu->m_PC++;
+        if (*x != imme) m_Cpu->m_PC += 2;
         break;
     case InstrType::SeVV:
-        if (*x == *y) m_Cpu->m_PC++;
+        if (*x == *y) m_Cpu->m_PC += 2;
         break;
     case InstrType::LdVB:
         *x = imme;
@@ -537,7 +537,7 @@ void Instruction::execute() const
         m_Cpu->m_MemReg = addr;
         break;
     case InstrType::JpVAddr:
-        m_Cpu->m_PC = addr + m_Cpu->m_GenRegs[0];
+        m_Cpu->m_PC = addr + m_Cpu->m_GenRegs[0] - 1;
         goto bypass_pc_increment;
         break;
     case InstrType::RndVB:
