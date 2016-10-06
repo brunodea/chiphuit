@@ -29,22 +29,22 @@ void Debugger::print_help()
     cout << "---------------------------" << std::endl;
 }
 
-void Debugger::print_instr(const cpu::Instruction &instr)
+void Debugger::print_instr(const cpu::Cpu &cpu)
 {
     using namespace std;
 
-    cout << "(" << hex << showbase << setfill('0') << setw(3) << m_LastAddr << ") ";
-    cout << instr.to_string() << std::endl;
+    cout << "(" << hex << showbase << setfill('0') << setw(3) << cpu.m_PC << ") ";
+    cout << cpu.next().to_string() << std::endl;
 }
 
-const Command &Debugger::run(const cpu::Cpu &cpu, const cpu::Instruction &last_instr, const mem::Memory &mem)
+const Command &Debugger::run(const cpu::Cpu &cpu, const mem::Memory &mem)
 {
     switch (m_Command->type())
     {
     case CommandType::STEP:
         if (!static_cast<StepCommand *>(m_Command.get())->is_done())
         {
-            print_instr(last_instr);
+            print_instr(cpu);
             goto quit_loop;
         }
         break;
@@ -73,7 +73,7 @@ const Command &Debugger::run(const cpu::Cpu &cpu, const cpu::Instruction &last_i
             {
                 case CommandType::STEP:
                     {
-                        print_instr(last_instr);
+                        print_instr(cpu);
                         goto quit_loop;
                     }
                     break;
@@ -139,7 +139,7 @@ const Command &Debugger::run(const cpu::Cpu &cpu, const cpu::Instruction &last_i
         }
     }
 quit_loop:
-    m_LastAddr = cpu.m_PC;
+
     return *m_Command;
 }
 
