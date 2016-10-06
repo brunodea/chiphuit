@@ -48,7 +48,16 @@ void ChipHuit::start()
             if (event.type == SDL_QUIT)
                 goto stop;
         }
-        m_Cpu->step();
+        auto instr = m_Cpu->step();
+        switch (instr.type())
+        {
+            case cpu::InstrType::Cls:
+                m_Video->clear_screen();
+                break;
+            default:
+                break;
+        }
+
         if ((std::chrono::steady_clock::now() - start).count() >= 60)
         {
             // 60 hz

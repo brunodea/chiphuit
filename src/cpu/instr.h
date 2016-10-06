@@ -20,10 +20,9 @@ namespace cpu
         Instruction(const word opcode, Cpu *cpu, mem::Memory *mem, video::Video *video);
 
         void execute() const;
-        std::string to_string() const noexcept;
+        std::string to_string() const;
 
-        inline
-        const InstrType &type() const noexcept;
+        const InstrType type() const;
 
     private:
         InstrType m_Type;
@@ -55,7 +54,5 @@ namespace cpu
         SkpV, SknpV,
         NOP, // no-op
     };
-    
-    using OpcodeMap = std::array<Instruction, NUMBER_OF_INSTRS>;
 } // end of namespace cpu
 } // end of namespace chu

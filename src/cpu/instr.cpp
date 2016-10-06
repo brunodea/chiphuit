@@ -144,7 +144,7 @@ Instruction::Instruction(const word opcode, Cpu *cpu, Memory *mem, Video *video)
         }
         break;
     case 0xE000 ... 0xEFFF:
-        switch (opcode & 0b11)
+        switch (opcode & 0xFF)
         {
             case 0x9E:
                 m_Type = InstrType::SkpV;
@@ -158,7 +158,7 @@ Instruction::Instruction(const word opcode, Cpu *cpu, Memory *mem, Video *video)
         }
         break;
     case 0xF000 ... 0xFFFF:
-        switch (opcode &0b11)
+        switch (opcode & 0xFF)
         {
             case 0x07:
                 m_Type = InstrType::LdVDt;
@@ -208,12 +208,12 @@ Instruction::Instruction(const word opcode, Cpu *cpu, Memory *mem, Video *video)
 }
 
 
-const InstrType &Instruction::type() const noexcept
+const InstrType Instruction::type() const
 {
     return m_Type;
 }
 
-std::string Instruction::to_string() const noexcept
+std::string Instruction::to_string() const
 {
     std::stringstream ss;
     enum class ElemOrder
@@ -441,11 +441,11 @@ std::string Instruction::to_string() const noexcept
 
 void Instruction::execute() const
 {
-    auto addr = m_Opcode & 0x0FFF;
-    auto lreg = (m_Opcode >> 8) & 0x1111;
-    auto rreg = (m_Opcode >> 4) & 0b1111;
-    auto kk = m_Opcode & 0x00FF;
-    auto n = m_Opcode & 0b1111;
+    auto addr = m_Opcode & 0xFFF;
+    auto lreg = (m_Opcode >> 8) & 0xF;
+    auto rreg = (m_Opcode >> 4) & 0xF;
+    auto kk = m_Opcode & 0xFF;
+    auto n = m_Opcode & 0xF;
 
     auto &x = m_Cpu->m_GenRegs[lreg];
     auto &y = m_Cpu->m_GenRegs[rreg];
@@ -459,6 +459,7 @@ void Instruction::execute() const
     case InstrType::ScdN:
         break;
     case InstrType::Cls:
+        // implemented in chiphuit 'run' function.
         break;
     case InstrType::Ret:
         m_Cpu->m_PC = m_Cpu->pop_stack_word();
@@ -480,6 +481,7 @@ void Instruction::execute() const
     case InstrType::Call:
         m_Cpu->push_stack_word(m_Cpu->m_PC);
         m_Cpu->m_PC = addr;
+        goto bypass_pc_increment;
         break;
     case InstrType::SeVB:
         if (x == kk) m_Cpu->m_PC += 2;
@@ -532,7 +534,7 @@ void Instruction::execute() const
         x <<= 1;
         break;
     case InstrType::SneVV:
-        if (x != y) m_Cpu->m_PC++;
+        if (x != y) m_Cpu->m_PC += 2;
         break;
     case InstrType::LdIAddr:
         m_Cpu->m_MemReg = addr;
@@ -549,10 +551,13 @@ void Instruction::execute() const
         }
         break;
     case InstrType::DrwVV0:
+        {
+            m_Cpu->m_FlagReg = m_Video->set_byte(m_Memory->read(m_Cpu->m_MemReg), x, y) ? 1 : 0;
+        }
+        break;
     case InstrType::DrwVVN:
         {
             bool set_vf = false;
-            n = n == 0 ? 1 : n;
             for (auto i = 0; i < n; i++)
             {
                 set_vf = m_Video->set_byte(
@@ -580,6 +585,7 @@ void Instruction::execute() const
         m_Cpu->m_MemReg += x;
         break;
     case InstrType::LdFV:
+        m_Cpu->m_MemReg = lreg * 5;
         break;
     case InstrType::LdHfV:
         break;
@@ -596,18 +602,18 @@ void Instruction::execute() const
     case InstrType::LdIV:
         {
             int i;
-            for (i = 0; i < lreg; ++i)
+            for (i = 0; i <= lreg; ++i)
             {
                 auto val = i == 16 ? m_Cpu->m_FlagReg : m_Cpu->m_GenRegs[i];
                 m_Memory->write(m_Cpu->m_MemReg + i, val);
             }
-            m_Cpu->m_MemReg += i; // TODO: make sure this should be done
+            //m_Cpu->m_MemReg += i; // TODO: make sure this should be done
         }
         break;
     case InstrType::LdVI:
         {
             int i;
-            for (i = 0; i < lreg; ++i)
+            for (i = 0; i <= lreg; ++i)
             {
                 auto val = m_Memory->read(m_Cpu->m_MemReg + i);
                 if (i == 16)
@@ -615,7 +621,7 @@ void Instruction::execute() const
                 else
                     m_Cpu->m_GenRegs[i] = val;
             }
-            m_Cpu->m_MemReg += i; // TODO: make sure this should be done
+            //m_Cpu->m_MemReg += i; // TODO: make sure this should be done
         }
         break;
     case InstrType::LdRV:
