@@ -37,20 +37,19 @@ void Video::setup(const unsigned int delta)
         else
         {
             m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
-            SDL_SetRenderDrawColor(m_Renderer, 0xFF, 0xFF, 0xFF, 0x00);
-//            clear_screen();
+            SDL_SetRenderDrawColor(m_Renderer, 0x0, 0x0, 0x0, 0x0);
+            clear_screen();
         }
     }
 }
 
 void Video::clear_screen()
 {
-    memset(m_Pixels, 0, sizeof m_Pixels);
+    memset(m_Pixels, 0xFF, sizeof m_Pixels);
 }
 
 bool Video::set_byte(const byte b, const unsigned int x, const unsigned int y)
 {
-    //std::cout << std::flush << x << ',' << y << std::endl;
     auto pb = pixel_byte(x, y);
     auto old_byte = m_Pixels[pb];
     auto res = b^old_byte;
