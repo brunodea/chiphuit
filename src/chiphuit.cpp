@@ -31,24 +31,9 @@ void ChipHuit::start()
 #endif
     do
     {
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
-            if (event.type == SDL_QUIT)
-                goto stop;
-        }
-        auto instr = m_Cpu->step();
-        if ((std::chrono::steady_clock::now() - start).count() >= 60)
-        {
-            // 60 hz
-            start = std::chrono::steady_clock::now();
-            m_Cpu->update_delay_register();
-        }
-        m_Video->update();
-
  #ifndef NDEBUG
-        auto cmd = debugger.run(m_Cpu.get(), &instr, m_Memory.get());
-        switch (cmd->type())
+        auto cmd = debugger.run(*m_Cpu, m_Cpu->next(), *m_Memory);
+        switch (cmd.type())
         {
         case dbg::CommandType::QUIT:
             goto stop;
@@ -57,6 +42,21 @@ void ChipHuit::start()
             break;
         }
 #endif
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+                goto stop;
+        }
+        m_Cpu->step();
+        if ((std::chrono::steady_clock::now() - start).count() >= 60)
+        {
+            // 60 hz
+            start = std::chrono::steady_clock::now();
+            m_Cpu->update_delay_register();
+        }
+        m_Video->update();
+
    } while(true);
 
 stop:

@@ -25,9 +25,14 @@ Cpu::Cpu(mem::Memory *memory, video::Video *video)
 
 Instruction Cpu::step()
 {
-    auto instr = (*m_OpcodeMap)[m_Memory->read_word(m_PC)];
+    auto instr = next();
     instr.execute();
     return instr;
+}
+
+Instruction Cpu::next()
+{
+    return (*m_OpcodeMap)[m_Memory->read_word(m_PC)];
 }
 
 byte Cpu::pop_stack_byte()

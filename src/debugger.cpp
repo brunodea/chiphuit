@@ -37,14 +37,14 @@ void Debugger::print_instr(const cpu::Instruction &instr)
     cout << instr.to_string() << std::endl;
 }
 
-Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, const mem::Memory *mem)
+const Command &Debugger::run(const cpu::Cpu &cpu, const cpu::Instruction &last_instr, const mem::Memory &mem)
 {
     switch (m_Command->type())
     {
     case CommandType::STEP:
         if (!static_cast<StepCommand *>(m_Command.get())->is_done())
         {
-            print_instr(*last_instr);
+            print_instr(last_instr);
             goto quit_loop;
         }
         break;
@@ -73,14 +73,14 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, 
             {
                 case CommandType::STEP:
                     {
-                        print_instr(*last_instr);
+                        print_instr(last_instr);
                         goto quit_loop;
                     }
                     break;
                 case CommandType::MEMORY:
                     {
                         auto mem_cmd = static_cast<MemCommand *>(m_Command.get());
-                        mem->print_chunk(mem_cmd->begin(), mem_cmd->end());
+                        mem.print_chunk(mem_cmd->begin(), mem_cmd->end());
                     }
                     break;
                 case CommandType::RUN:
@@ -101,7 +101,7 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, 
                         for (int i = 0; i < NUMBER_OF_GENREGS; i++)
                         {
                             std::cout << std::setfill(' ') << std::setw(6)
-                                << std::hex << std::showbase << int(cpu->m_GenRegs[i]);
+                                << std::hex << std::showbase << int(cpu.m_GenRegs[i]);
                         }
                         const std::string spectitle = "Special Registers";
                         std::cout << std::endl << spectitle << std::setfill('-') <<
@@ -139,8 +139,8 @@ Command *Debugger::run(const cpu::Cpu *cpu, const cpu::Instruction *last_instr, 
         }
     }
 quit_loop:
-    m_LastAddr = cpu->m_PC;
-    return m_Command.get();
+    m_LastAddr = cpu.m_PC;
+    return *m_Command;
 }
 
 bool Debugger::parse(std::vector<std::string> &cmd_tokens)
