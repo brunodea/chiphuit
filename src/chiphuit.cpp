@@ -32,7 +32,7 @@ void ChipHuit::start()
     do
     {
  #ifndef NDEBUG
-        auto cmd = debugger.run(*m_Cpu, m_Cpu->next(), *m_Memory);
+        auto cmd = debugger.run(*m_Cpu, *m_Memory);
         switch (cmd.type())
         {
         case dbg::CommandType::QUIT:

@@ -30,7 +30,7 @@ Instruction Cpu::step()
     return instr;
 }
 
-Instruction Cpu::next()
+Instruction Cpu::next() const
 {
     return (*m_OpcodeMap)[m_Memory->read_word(m_PC)];
 }

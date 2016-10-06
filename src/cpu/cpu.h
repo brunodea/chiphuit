@@ -30,7 +30,7 @@ namespace cpu
         Cpu(mem::Memory *memory, video::Video *video);
 
         Instruction step();
-        Instruction next();
+        Instruction next() const;
         void update_delay_register();
 
     private:

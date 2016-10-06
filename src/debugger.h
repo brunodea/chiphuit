@@ -62,17 +62,16 @@ namespace dbg
     class Debugger
     {
     public:
-        Debugger() : m_Command(std::make_unique<Command>()), m_LastAddr(MEMORY_ROM_START_ADDR) {}
-        const Command &run(const cpu::Cpu &cpu, const cpu::Instruction &last_instr, const mem::Memory &mem);
+        Debugger() : m_Command(std::make_unique<Command>()) {}
+        const Command &run(const cpu::Cpu &cpu, const mem::Memory &mem);
         void print_help();
 
     private:
         bool parse(std::vector<std::string> &cmd_tokens);
-        void print_instr(const cpu::Instruction &instr);
+        void print_instr(const cpu::Cpu &cpu);
 
     private:
         std::unique_ptr<Command> m_Command;
-        word m_LastAddr;
     };
 } // end of namespace dbg
 } // end of namespace chu
