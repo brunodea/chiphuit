@@ -21,7 +21,7 @@ ChipHuit::ChipHuit(const std::vector<byte> &rom)
 
 void ChipHuit::start()
 {
-    m_Video->setup(5);
+    m_Video->setup(10);
 
     auto start = std::chrono::steady_clock::now();
 #ifndef NDEBUG
