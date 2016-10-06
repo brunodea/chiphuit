@@ -18,6 +18,8 @@
 
 #define BYTES_IN_SCREEN BYTES_IN_WIDTH * BYTES_IN_HEIGHT
 
+#define BYTES_IN_STACK 16 * 2
+
 using SReg = uint8_t;  // Simple Register
 using DReg = uint16_t; // Double Register
 
