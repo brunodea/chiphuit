@@ -10,7 +10,7 @@ using namespace chu::cpu;
 
 Cpu::Cpu(mem::Memory *memory, video::Video *video)
     : m_MemReg(0), m_DelayReg(0), m_SoundReg(0),
-    m_PC(MEMORY_ROM_START_ADDR), m_SP(0), m_Memory(memory), m_Video(video)
+    m_PC(MEMORY_ROM_START_ADDR), m_SP(0), m_Memory(memory), m_Video(video), m_StackArray{ 0 }
 {
     // Initialize registers with 0.
     std::memset(m_GenRegs, 0, sizeof m_GenRegs);
@@ -32,7 +32,7 @@ Instruction Cpu::step()
 
 byte Cpu::pop_stack_byte()
 {
-    return m_Memory->read(m_SP--);
+    return m_StackArray[m_SP--];
 }
 
 word Cpu::pop_stack_word()
@@ -45,7 +45,7 @@ word Cpu::pop_stack_word()
 
 void Cpu::push_stack_byte(const byte b)
 {
-    m_Memory->write(++m_SP, b);
+    m_StackArray[++m_SP] = b;
 }
 
 void Cpu::push_stack_word(const word w)

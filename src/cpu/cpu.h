@@ -54,6 +54,7 @@ namespace cpu
         video::Video *m_Video;
 
         std::unique_ptr<OpcodeMap> m_OpcodeMap;
+        std::array<byte, BYTES_IN_STACK> m_StackArray;
     }; // end of class Cpu
 
 } // end of namespace cpu
