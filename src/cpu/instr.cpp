@@ -442,12 +442,13 @@ std::string Instruction::to_string() const noexcept
 void Instruction::execute() const
 {
     auto addr = m_Opcode & 0x0FFF;
-    auto lreg = (m_Opcode >> 8) & 0x000F;
-    auto rreg = (m_Opcode >> 4) & 0x000F;
-    auto imme = m_Opcode & 0x00FF;
+    auto lreg = (m_Opcode >> 8) & 0x1111;
+    auto rreg = (m_Opcode >> 4) & 0b1111;
+    auto kk = m_Opcode & 0x00FF;
+    auto n = m_Opcode & 0b1111;
 
-    auto *x = &m_Cpu->m_GenRegs[lreg];
-    auto *y = &m_Cpu->m_GenRegs[rreg];
+    auto &x = m_Cpu->m_GenRegs[lreg];
+    auto &y = m_Cpu->m_GenRegs[rreg];
 
     switch (m_Type)
     {
@@ -481,57 +482,57 @@ void Instruction::execute() const
         m_Cpu->m_PC = addr;
         break;
     case InstrType::SeVB:
-        if (*x == imme) m_Cpu->m_PC += 2;
+        if (x == kk) m_Cpu->m_PC += 2;
         break;
     case InstrType::SneVB:
-        if (*x != imme) m_Cpu->m_PC += 2;
+        if (x != kk) m_Cpu->m_PC += 2;
         break;
     case InstrType::SeVV:
-        if (*x == *y) m_Cpu->m_PC += 2;
+        if (x == y) m_Cpu->m_PC += 2;
         break;
     case InstrType::LdVB:
-        *x = imme;
+        x = kk;
         break;
     case InstrType::AddVB:
-        *x += imme;
+        x += kk;
         break;
     case InstrType::LdVV:
-        *x = *y;
+        x = y;
         break;
     case InstrType::OrVV:
-        *x |= *y;
+        x |= y;
         break;
     case InstrType::AndVV:
-        *x &= *y;
+        x &= y;
         break;
     case InstrType::XorVV:
-        *x ^= *y;
+        x ^= y;
         break;
     case InstrType::AddVV:
         {
-            auto sum = static_cast<word>(*x) + static_cast<word>(*y);
+            auto sum = static_cast<word>(x) + static_cast<word>(y);
             m_Cpu->m_FlagReg = sum > 0xFF ? 1 : 0;
-            *x = static_cast<byte>(sum);
+            x = static_cast<byte>(sum);
         }
         break;
     case InstrType::SubVV:
-        m_Cpu->m_FlagReg = *x > *y ? 1 : 0;
-        *x -= *y;
+        m_Cpu->m_FlagReg = x > y ? 1 : 0;
+        x -= y;
         break;
     case InstrType::ShrV:
-        m_Cpu->m_FlagReg = (*x & 0b1) == 1 ? 1 : 0;
-        *x >>= 1;
+        m_Cpu->m_FlagReg = (x & 0b1) == 1 ? 1 : 0;
+        x >>= 1;
         break;
     case InstrType::SubnVV:
-        m_Cpu->m_FlagReg = *y > *x ? 1 : 0;
-        *x = *y - *x;
+        m_Cpu->m_FlagReg = y > x ? 1 : 0;
+        x = y - x;
         break;
     case InstrType::ShlV:
-        m_Cpu->m_FlagReg = (*x & 0b10000000) == 1 ? 1 : 0;
-        *x <<= 1;
+        m_Cpu->m_FlagReg = (x & 0b10000000) == 1 ? 1 : 0;
+        x <<= 1;
         break;
     case InstrType::SneVV:
-        if (*x != *y) m_Cpu->m_PC++;
+        if (x != y) m_Cpu->m_PC++;
         break;
     case InstrType::LdIAddr:
         m_Cpu->m_MemReg = addr;
@@ -544,18 +545,18 @@ void Instruction::execute() const
         {
             std::default_random_engine gen;
             std::uniform_int_distribution<byte> dist(0x00, 0xFF);
-            *x = dist(gen) & imme;
+            x = dist(gen) & kk;
         }
         break;
     case InstrType::DrwVV0:
     case InstrType::DrwVVN:
         {
             bool set_vf = false;
-            imme = imme == 0 ? 1 : imme;
-            for (auto i = 0; i < imme; i++)
+            n = n == 0 ? 1 : n;
+            for (auto i = 0; i < n; i++)
             {
                 set_vf = m_Video->set_byte(
-                        m_Memory->read(m_Cpu->m_MemReg + i), *x, (*y)+i);
+                        m_Memory->read(m_Cpu->m_MemReg + i), x, y+i);
             }
             m_Cpu->m_FlagReg = set_vf ? 1 : 0;
         }
@@ -565,18 +566,18 @@ void Instruction::execute() const
     case InstrType::SknpV:
         break;
     case InstrType::LdVDt:
-        *x = m_Cpu->m_DelayReg;
+        x = m_Cpu->m_DelayReg;
         break;
     case InstrType::LdVK:
         break;
     case InstrType::LdDtV:
-        m_Cpu->m_DelayReg = *x;
+        m_Cpu->m_DelayReg = x;
         break;
     case InstrType::LdStV:
-        m_Cpu->m_SoundReg = *x;
+        m_Cpu->m_SoundReg = x;
         break;
     case InstrType::AddIV:
-        m_Cpu->m_MemReg += *x;
+        m_Cpu->m_MemReg += x;
         break;
     case InstrType::LdFV:
         break;
@@ -584,9 +585,9 @@ void Instruction::execute() const
         break;
     case InstrType::LdBV:
         {
-            auto c = *x / 100;
-            auto d = ((*x / 10) % 10);
-            auto u = *x - (c * 100) + (d * 10);
+            auto c = x / 100;
+            auto d = ((x / 10) % 10);
+            auto u = x - (c * 100) + (d * 10);
             m_Memory->write(m_Cpu->m_MemReg, c);
             m_Memory->write(m_Cpu->m_MemReg + 1, d);
             m_Memory->write(m_Cpu->m_MemReg + 2, u);
