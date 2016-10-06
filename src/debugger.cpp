@@ -115,12 +115,12 @@ const Command &Debugger::run(const cpu::Cpu &cpu, const cpu::Instruction &last_i
                             << std::setfill(' ') << std::setw(9) << "DelayReg"
                             << std::setfill(' ') << std::setw(9) << "SoundReg"
                             << std::endl
-                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_PC)
-                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_SP)
-                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_FlagReg)
-                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_MemReg)
-                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_DelayReg)
-                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu->m_SoundReg)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu.m_PC)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu.m_SP)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu.m_FlagReg)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu.m_MemReg)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu.m_DelayReg)
+                            << std::setfill(' ') << std::setw(9) << std::hex << std::showbase << int (cpu.m_SoundReg)
                             << std::endl;
                     }
                     break;

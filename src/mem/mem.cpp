@@ -78,7 +78,6 @@ void Memory::print_chunk(const word start_address, const word end_address) const
         if (t == 2)
         {
             t = 0;
-            std::cout << ' ';
         }
     }
     std::cout << std::endl;
