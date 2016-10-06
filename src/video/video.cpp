@@ -62,7 +62,7 @@ bool Video::set_byte(const byte b, const unsigned int x, const unsigned int y)
 
 unsigned int Video::pixel_byte(const unsigned int x, const unsigned int y) const
 {
-    return ((BYTES_IN_WIDTH * y) % BYTES_IN_HEIGHT)+ ((x / BITS_IN_BYTE) % BYTES_IN_WIDTH);
+    return (BYTES_IN_WIDTH * (y % BYTES_IN_HEIGHT))+ ((x / BITS_IN_BYTE) % BYTES_IN_WIDTH);
 }
 
 void Video::update()
